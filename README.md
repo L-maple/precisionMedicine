@@ -76,6 +76,8 @@ qrels-2018.zip
 
 ### 4.对elasticsearch进行操作
 
+**官网博客**： https://www.elastic.co/guide/cn/elasticsearch/guide
+
 #### 4.1 组合多个过滤条件（Disease, Gene, Demographic, Other）
 
 当需要过滤多个值和字段时，需要使用Elasticsearch中的bool过滤器，它可以接受多个其他过滤器作为参数，并将这些过滤器结合成各式各样的布尔（逻辑）组合。
@@ -119,8 +121,6 @@ GET /my_store/products/_search
   }
 }
 ```
-
-**参考博客**： https://www.elastic.co/guide/cn/elasticsearch/guide/current/combining-filters.html
 
 #### 4.2 范围 (age range in ...)
 
