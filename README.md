@@ -70,7 +70,27 @@ qrels-2018.zip
 
 ### 3.对文件进行处理
 
-这部分涉及代码部分
+#### 3.1 clinicaltrials_txt
+
+对文本数据进行结构化处理，对5项值进行判定：
+
+1）content；2）gender；3）min_age；4）max_age；5）exclusion；
+
+```
+content:title condition summary inclusion, 
+gender, 
+min_age, 
+max_age, 
+exclusion
+```
+
+
+
+#### 3.2 abstracts
+
+
+
+#### 3.3 topics
 
 
 

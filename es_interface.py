@@ -5,10 +5,10 @@ from elasticsearch.helpers import bulk
 
 
 class Elastic:
-    def __init__(self, index_name,index_type,ip ="127.0.0.1"):
+    def __init__(self, index_name,index_type, ip="127.0.0.1", port=9200):
         self.index_name = index_name
         self.index_type = index_type
-        self.es = Elasticsearch([ip],port=9200)
+        self.es = Elasticsearch([ip], port=port)
 
     def delete_index(self):
         self.es.indices.delete(index=self.index_name, ignore=[400, 404])
@@ -17,9 +17,19 @@ class Elastic:
         res = self.es.index(index=self.index_name, id=id, doc_type=self.index_type, body=body)
         print(res)
 
-    def bulk_index_data(self, datas):
-        success, _ = bulk(self.es, datas, index=self.index_name, raise_on_error=True)
-        print('Performed %d actions' % success)
+    def bulk_index_data(self, ids, contents):
+        body = list()
+        for i in range(len(ids)):
+            action = {
+                "_index": self.index_name,
+                "_type": self.index_type,
+                "_id": ids[i],
+                "_source": {
+                    "content": contents[i]["content"]
+                }
+            }
+            body.append(action)
+        success, _ = bulk(self.es, body, index=self.index_name, raise_on_error=True)
 
     def delete_index_data(self, id):
         self.es.delete(index=self.index_name, doc_type=self.index_type, id=id)

@@ -62,10 +62,11 @@ if __name__ == "__main__":
 
     # 对medline_txt获取文件名并进行测试
     # count = 0
-    # medline_txt_dir = "/home/maple/IR/medline_txt"
+    medline_txt_dir = "/home/maple/IR/medline_txt"
     # for _, medline_txt_file in enumerate(get_medline_txt_files(medline_txt_dir)):
-    #     id = get_doc_id(medline_txt_file)
-    #     print(id)
+    #     # id = get_doc_id(medline_txt_file)
+    #     # print(id)
     #     count += 1
     # print(count)
+    print(get_medline_txt_files(medline_txt_dir))
     pass

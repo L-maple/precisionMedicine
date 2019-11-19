@@ -39,6 +39,6 @@ def get_topics_json(directory):
 if __name__ == "__main__":
     topics = get_topics_json("topics2018.xml")
     for _, topic in enumerate(topics):
-        # print(topic["number"], topic["disease"], topic["gene"], topic["demographic"])
-        # print(topic)
+        print(topic["number"], topic["disease"], topic["gene"], topic["demographic"])
+        print(topic)
         pass
