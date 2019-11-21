@@ -20,7 +20,7 @@ def medline_index_data_run():
         ids.append(id)
         if count % 10000 == 0:
             print ("start, ", time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
-            medline_es.bulk_index_data(ids, bodies)
+            medline_es.bulk_index_data_for_abstracts(ids, bodies)
             ids.clear()
             bodies.clear()
             print(count, "'s lines has been inserted.")
@@ -34,7 +34,7 @@ def medline_index_data_run():
 def extra_abstracts_index_data_run():
     count = 0
     # 将medline_txt中的所有文本都添加到
-    extra_abstracts_es = Elastic("medline", "medline_type", "127.0.0.1", 9300)
+    extra_abstracts_es = Elastic("medline", "medline_type", "127.0.0.1", 9200)
     extra_abstracts_dir = "/home/maple/IR/extra_abstracts"
     for _, extra_abstracts_file in enumerate(get_extra_abstracts_files(extra_abstracts_dir)):
         with open(extra_abstracts_file) as ef:

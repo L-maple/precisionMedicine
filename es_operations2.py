@@ -30,4 +30,5 @@ def extra_abstracts_index_data_run():
 
 
 if __name__ == "__main__":
-    extra_abstracts_index_data_run()
+    # extra_abstracts_index_data_run()  已经插入
+    pass

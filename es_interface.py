@@ -17,7 +17,7 @@ class Elastic:
         res = self.es.index(index=self.index_name, id=id, doc_type=self.index_type, body=body)
         print(res)
 
-    def bulk_index_data(self, ids, contents):
+    def bulk_index_data_for_abstracts(self, ids, contents):
         body = list()
         for i in range(len(ids)):
             action = {
@@ -26,6 +26,24 @@ class Elastic:
                 "_id": ids[i],
                 "_source": {
                     "content": contents[i]["content"]
+                }
+            }
+            body.append(action)
+        success, _ = bulk(self.es, body, index=self.index_name, raise_on_error=True)
+
+    def bulk_index_data_for_clinicaltrials(self, ids, contents):
+        body = list()
+        for i in range(len(ids)):
+            action = {
+                "_index": self.index_name,
+                "_type": self.index_type,
+                "_id": ids[i],
+                "_source": {
+                    "content": contents[i]["content"],
+                    "gender": contents[i]["gender"],
+                    "min_age": contents[i]["min_age"],
+                    "max_age": contents[i]["max_age"],
+                    "exclusion": contents[i]["exclusion"]
                 }
             }
             body.append(action)
