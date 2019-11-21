@@ -48,8 +48,6 @@ def extra_abstracts_index_data_run():
 
 if __name__ == "__main__":
     medline_index_data_run()
-    # extra_abstracts_index_data_run()
-    pass
 
 
 
