@@ -16,7 +16,7 @@
 
 **Elasticsearch **
 
-我们小组对Galago、Elasticsearch、Terrier、Anserini等搜索系统进行评估，以**开源**，**性能**, **易用性**，**企业应用普及性**等角度综合考虑，Elasticsearch作为高性能的开源搜索系统，简单易用，在企业得到广泛应用，值得信赖，最终选择Elasticsearch。
+我们小组对Galago、Elasticsearch、Terrier、Anserini等搜索系统进行评估，以**开源**，**性能**, **易用性**，**可视化**, **企业应用普及性**等角度综合考虑，Elasticsearch作为高性能的开源搜索系统，简单易用，在企业得到广泛应用，值得信赖，最终选择Elasticsearch。
 
 Terrier直接为TREC提供了接口？？
 
@@ -268,6 +268,33 @@ def get_topics_json(directory):
 ### 4. 控制相关度
 
 ES并没有内置检索模型，但可以在查询时修改相关度function的方式来控制相关度；
+
+Example:
+
+```json
+GET /_search
+{
+  "query": {
+    "bool": {
+      "should": [
+        {
+          "match": {
+            "title": {
+              "query": "quick brown fox",
+              "boost": 2 
+            }
+          }
+        },
+        {
+          "match": { 
+            "content": "quick brown fox"
+          }
+        }
+      ]
+    }
+  }
+}
+```
 
 
 

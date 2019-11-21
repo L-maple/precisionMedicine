@@ -8,7 +8,8 @@ class Elastic:
     def __init__(self, index_name,index_type, ip="127.0.0.1", port=9200):
         self.index_name = index_name
         self.index_type = index_type
-        self.es = Elasticsearch([ip], port=port)
+        self.es = Elasticsearch([ip], port=port, timeout=30, max_retries=10, retry_on_timeout=True)
+        self.es.cluster.health(wait_for_status='yellow', request_timeout=1)
 
     def delete_index(self):
         self.es.indices.delete(index=self.index_name, ignore=[400, 404])
@@ -61,7 +62,7 @@ class Elastic:
         #     print(hit['_source']['date'],hit['_source']['source'],hit['_source']['link'],hit['_source']['keyword'],hit['_source']['title'])
 
     def get_data_by_body(self, body):
-        _searched = self.es.search(index=self.index_name, doc_type=self.index_type, body=body)
+        _searched = self.es.search(index=self.index_name, body=body, size=1000, timeout="30s")
         return _searched
         # for hit in _searched['hits']['hits']:
         #     print hit['_source']['date'], hit['_source']['source'], hit['_source']['link'], hit['_source']['keyword'], \
