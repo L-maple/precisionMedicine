@@ -4,6 +4,8 @@
 
 **刘常杰，孙为民，万斯梦**
 
+**项目地址：**https://github.com/L-maple/precisionMedicine
+
 
 
 ### 0. 背景
@@ -265,50 +267,193 @@ def get_topics_json(directory):
 
 
 
-### 4. 控制相关度
+### 4. 通过给topic中各字段加boost控制相关度
 
-ES并没有内置检索模型，但可以在查询时修改相关度function的方式来控制相关度；
+**遇到的困难：** 
 
-Example:
+(1) ES并没有内置加权模型，加权通过自己通过手动配置来实现，花了比较多的时间；
 
-```json
-GET /_search
-{
-  "query": {
-    "bool": {
-      "should": [
-        {
-          "match": {
-            "title": {
-              "query": "quick brown fox",
-              "boost": 2 
+#### 4.1 **查询条件（带权重）核心代码: **
+
+**query_conditions.py**
+
+```python
+def get_body(disease, disease_boost, gene, gene_boost, gender, gender_boost, age, age_boost):
+    clinical_body = {
+        "query": {
+            "bool": {
+                "should": [
+                {
+                    "match": {
+                        "content": {
+                            "query": disease,
+                            "boost": disease_boost
+                        }
+                    }
+                },
+                {
+                    "match": {
+                        "content": {
+                            "query": gene,
+                            "boost": gene_boost
+                        }
+                    }
+                },
+                {
+                    "bool": {
+                        "should": [
+                        {
+                            "match": {
+                                "gender": {
+                                    "query": gender,
+                                    "boost": gender_boost
+                                }
+                            }
+                        },
+                        {
+                            "match": {
+                                "gender": {
+                                    "query": "all",
+                                    "boost": gender_boost
+                                }
+                            }
+                        }
+                        ]
+                    }
+                },
+                {
+                    "bool": {
+                        "must": [
+                        {
+                            "range": {
+                                "min_age": {
+                                    "lte": age,
+                                    "boost": age_boost
+                                }
+                            }
+                        },
+                        {
+                            "range": {
+                                "max_age": {
+                                    "gte": age,
+                                    "boost": age_boost
+                                }
+                            }
+                        }
+                        ]
+                    }
+                }
+                ]
             }
-          }
+        }
+    }
+    return clinical_body
+```
+
+**param.config**
+
+```python
+{
+    "clinical_medline": [
+        {
+            "param": [4, 3, 2, 1]
         },
         {
-          "match": { 
-            "content": "quick brown fox"
-          }
+            "param": [3, 3, 2, 2]
+        },
+        {
+            "param": [3, 3, 3, 1]
+        },
+        {
+            "param": [5, 2, 2, 1]
+        },
+        {
+            "param": [5, 3, 1, 1]
+        },
+        {
+            "param": [6, 2, 1, 1]
+        },
+        {
+            "param": [4, 4, 1, 1]
+        },
+        {
+            "param": [3, 4, 2, 1]
+        },
+        {
+            "param": [3, 4, 1, 2]
+        },
+        {
+            "param": [4, 3, 1, 2]
         }
-      ]
-    }
-  }
+    ]
 }
 ```
 
 
 
-### 5. 评价检索结果
+#### 4.2 加权检索结果（rank 1-1000）
 
- P@10：返回前10个结果的精确度。P英文为Precision。
+##### 4.2.1 clinicaltrials
+
+Example: clinical_trials_3322
+
+```
+1 Q0 NCT00405587 1 10.754394 3322
+1 Q0 NCT01136967 2 10.531672 3322
+1 Q0 NCT01597908 3 10.320544 3322
+1 Q0 NCT01264380 4 10.304168 3322
+1 Q0 NCT01928940 5 10.296316 3322
+1 Q0 NCT01584648 6 10.110489 3322
+1 Q0 NCT02202200 7 9.861431 3322
+1 Q0 NCT01682083 8 9.799225 3322
+1 Q0 NCT02130466 9 9.764382 3322
+1 Q0 NCT01400451 10 9.697798 3322
+1 Q0 NCT02416232 11 9.6823635 3322
+1 Q0 NCT01586195 12 9.63162 3322
+1 Q0 NCT01245062 13 9.630732 3322
+1 Q0 NCT01942993 14 9.565079 3322
+1 Q0 NCT01978236 15 9.458061 3322
+1 Q0 NCT01897116 16 9.407016 3322
+1 Q0 NCT01037127 17 9.37583 3322
+。。。。。。
+```
+
+##### 4.2.2 medline_txt
+
+Example: pubmed_abstracts_4321
+
+```
+1 Q0 27210749 1 13.658989 4321
+1 Q0 22189819 2 13.618208 4321
+1 Q0 26451873 3 13.516661 4321
+1 Q0 26138035 4 13.447766 4321
+1 Q0 25117819 5 13.361897 4321
+1 Q0 17409425 6 13.350874 4321
+1 Q0 25472943 7 13.312098 4321
+1 Q0 23403819 8 13.296425 4321
+1 Q0 16540682 9 13.284851 4321
+1 Q0 27928645 10 13.255138 4321
+1 Q0 27793752 11 13.191906 4321
+1 Q0 25442222 12 13.181063 4321
+1 Q0 26878440 13 13.138643 4321
+1 Q0 22535154 14 13.126826 4321
+1 Q0 ASCO_186257-199 15 13.091613 4321
+1 Q0 22850568 16 13.048242 4321
+1 Q0 23026937 17 13.0191555 4321
+。。。。。。
+```
+
+### 5. 相关性评价
+
+NDCG（Normalized Discounted Cumulative Gain）表示归一化折损累积增益。
 
 MAP (Mean Average Precision)：就是说对一个叫Average Precision（AP）的东西取平均值。检测一个系统的性能，常用多个不同种类的查询对它进行测试，每个查询的结果都能计算出一个AP值，把所有AP取平均值就是系统的MAP。
 
-##### 
 
 
 
-困惑：如何得到相关性得分？
+
+
 
 
 
