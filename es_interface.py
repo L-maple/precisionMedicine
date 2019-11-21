@@ -54,7 +54,7 @@ class Elastic:
 
     def get_data_id(self, id):
         res = self.es.get(index=self.index_name, doc_type=self.index_type, id=id)
-        print(res)
+        return res
 
         # # 输出查询到的结果
         # for hit in res['hits']['hits']:
@@ -62,7 +62,7 @@ class Elastic:
 
     def get_data_by_body(self, body):
         _searched = self.es.search(index=self.index_name, doc_type=self.index_type, body=body)
-
+        return _searched
         # for hit in _searched['hits']['hits']:
         #     print hit['_source']['date'], hit['_source']['source'], hit['_source']['link'], hit['_source']['keyword'], \
         #     hit['_source']['title']

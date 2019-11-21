@@ -2,6 +2,7 @@
 
 from xml.dom.minidom import parse
 import xml.dom.minidom
+from es_interface import *
 import re
 
 
@@ -38,7 +39,8 @@ def get_topics_json(directory):
 
 if __name__ == "__main__":
     topics = get_topics_json("topics2018.xml")
+    clinicaltrials_es = Elastic("clinicaltrials", "clinicaltrials_type", "127.0.0.1", 9200)
     for _, topic in enumerate(topics):
-        print(topic["number"], topic["disease"], topic["gene"], topic["demographic"])
-        print(topic)
-        pass
+        print(topic["number"], topic["disease"], topic["gene"], topic["age"], topic["gender"])
+        
+
